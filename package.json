@@ -1,0 +1,21 @@
+{
+  "name": "satanicchain",
+  "version": "1.0.0",
+  "description": "SatanicChain: EVM + L1 (666), SATAN/SUSD multi-chain, dApp, Admin multi-deploy",
+  "scripts": {
+    "compile": "node scripts/compile.js",
+    "test": "node scripts/local-run.js",
+    "deploy": "node scripts/deploy.js",
+    "deploy:all": "node scripts/deploy.js all",
+    "tokenlist": "node scripts/generate-tokenlist.js",
+    "dapp": "node scripts/serve-dapp.js",
+    "relayer": "node relayer/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "ganache": "^7.9.2",
+    "solc": "0.8.26"
+  },
+  "license": "MIT"
+}
