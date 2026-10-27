@@ -1,33 +1,37 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SatanicChain — своп и мост</title>
-<link rel="icon" href="logo.png">
+<meta name="theme-color" content="#08070b">
+<title>SatanicChain — Swap & Bridge</title>
+<link rel="icon" href="/dapp/logo.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/dapp/style.css">
+<style>
+  html,body{margin:0;min-height:100%;background:#08070b!important;color:#f2eef6!important}
+</style>
 </head>
 <body>
 <div class="shell">
   <aside class="rail">
-    <img class="logo" src="logo.gif" alt="SatanicChain">
+    <img class="logo" src="/dapp/logo.gif" alt="SatanicChain" onerror="this.style.display='none'">
     <nav class="nav">
       <button data-tab="swap" class="on">
         <svg viewBox="0 0 24 24"><path d="M7 4v13M7 17l-3-3M17 20V7M17 7l3 3"/></svg>
-        ОБМЕН
+        SWAP
       </button>
       <button data-tab="bridge">
         <svg viewBox="0 0 24 24"><path d="M3 15h18M6 15V9a3 3 0 013-3h6a3 3 0 013 3v6"/><path d="M12 3v18"/></svg>
-        МОСТ
+        BRIDGE
       </button>
       <button data-tab="pool">
         <svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>
-        ПУЛ
+        POOL
       </button>
       <button data-tab="wallet">
         <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14h2"/></svg>
-        КОШЕЛЁК
+        WALLET
       </button>
     </nav>
   </aside>
@@ -36,12 +40,12 @@
     <div class="top">
       <div class="brand">
         <h1>SATANICCHAIN</h1>
-        <p>SATAN · SUSD · ETH · цены Coinbase · 38 сетей</p>
+        <p>SATAN · SUSD · ETH · Coinbase prices · multi-chain</p>
       </div>
       <div class="spacer"></div>
       <select id="netSelect" style="width:auto;min-width:170px"></select>
-      <span class="pill" id="chainChip"><span class="dot"></span>сеть</span>
-      <span class="pill primary" id="accountChip">Подключить кошелёк</span>
+      <span class="pill" id="chainChip"><span class="dot"></span>network</span>
+      <span class="pill primary" id="accountChip">Connect wallet</span>
     </div>
 
     <div id="tab"></div>
@@ -51,9 +55,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.17.2/dist/index.umd.js" defer></script>
-<script src="config.js"></script>
-<script src="prices.js"></script>
-<script src="i18n.js" defer></script>
-<script src="app.js" defer></script>
+<script src="/dapp/config.js"></script>
+<script src="/dapp/prices.js"></script>
+<script src="/dapp/app.js" defer></script>
 </body>
 </html>
