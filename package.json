@@ -1,7 +1,7 @@
 {
   "name": "satanicchain",
   "version": "1.0.0",
-  "description": "SatanicChain — EVM L1 (chainId 666, SATAN) + multi-chain dApp",
+  "description": "SatanicChain — EVM L1 (chainId 666, SATAN) + multi-chain dApp + AI 8x8x5",
   "scripts": {
     "unify": "node scripts/unify.js",
     "setup": "bash scripts/setup-all.sh",
@@ -17,8 +17,9 @@
     "dapp:config": "node scripts/make-dapp-config.js",
     "dapp": "node scripts/serve-dapp.js",
     "relayer": "node relayer/index.js",
+    "ai": "node ai/index.js once",
+    "ai:watch": "node ai/index.js watch",
     "test": "node scripts/local-run.js",
-    "test:all": "node scripts/test-swap-bridge.js && node scripts/test-deploy.js && node scripts/test-relayer.js && node scripts/test-dapp.js",
     "start": "node scripts/unify.js && node scripts/serve-dapp.js"
   },
   "dependencies": {
