@@ -10,7 +10,7 @@ window.DAPP_CONFIG = {
     {
       id: 666,
       name: 'SatanicChain',
-      rpc: (typeof localStorage !== 'undefined' && localStorage.getItem('RPC_SATANIC')) || 'http://127.0.0.1:8545',
+      rpc: 'http://127.0.0.1:8545',
       explorer: 'https://satanic.chain',
       currency: 'SATAN'
     },
