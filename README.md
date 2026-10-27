@@ -1,75 +1,67 @@
 # SatanicChain
 
-**Настоящий EVM L1 (chainId 666) + мультичейн контракты + dApp + Admin multi-deploy.**
+**Public permissionless PoS EVM L1 (chainId 666) + multi-chain contracts + dApp + Admin.**
 
-## Что это
+## Модель консенсуса
 
-| Компонент | Описание |
-|-----------|----------|
-| **L1** (`l1/`) | Собственный блокчейн на geth + **Clique PoA**, 3 валидатора, блок 3 сек, native **SATAN** |
-| **Contracts** | SATAN, SUSD, Vault (150% collateral), Swap, Bridge |
-| **dApp** | Своп / мост / пул / кошелёк — 38 сетей + L1 |
-| **Admin** | Деплой всех контрактов **одной кнопкой** во все выбранные сети через MetaMask |
-| **Relayer** | Простой relayer для кросс-чейн моста |
-| **Edge RPC** | Cloudflare Worker для публичного RPC |
+**Stake-weighted Proof-of-Stake (permissionless)**
 
-## L1 — запуск настоящей сети
+- Любой может застейкать native **SATAN** и стать валидатором (мин. 10 000 SATAN).
+- Активный набор = **топ-21** по стейку, пересчитывается on-chain.
+- Unbonding 7 дней, слэшинг 5%, jail 2 дня.
+- Движок блоков: geth Clique, набор подписантов синхронизируется из стейкинг-контракта.
+
+Подробно: [`l1/README.md`](l1/README.md)
+
+## Быстрый старт L1
 
 ```bash
 cd l1
 npm i ethers
-node scripts/init.js          # 3 валидатора + genesis
-./scripts/up.sh               # Docker: 3 sealers + RPC
-node scripts/status.js        # блок, peers, chainId
+node scripts/init.js
+./scripts/up.sh
+node scripts/status.js
 ```
 
-RPC: `http://127.0.0.1:8545`  
-Chain ID: **666**  
-Symbol: **SATAN**
+RPC `http://127.0.0.1:8545` · Chain ID **666** · Symbol **SATAN**
 
-Подробно: [`l1/README.md`](l1/README.md)
+## Контракты
+
+| Контракт | Назначение |
+|----------|------------|
+| `SatanicToken` | ERC-20 SATAN (ориентир 666 USD) |
+| `SatanicUSD` | SUSD стейблкоин |
+| `SatanicVault` | CDP 150% collateral |
+| `SatanicSwap` | Фиксированный своп |
+| `SatanicBridge` | Кросс-чейн мост |
+| **`SatanicStaking`** | **Permissionless PoS стейкинг** |
+| **`ValidatorSet`** | **Синхронизация active set → clique** |
 
 ## Админка multi-deploy
 
+`/admin/` — подключи MetaMask → выбери сети (включая L1 666) → деплой всех контрактов одной кнопкой.
+
+## Стать валидатором
+
+```js
+staking.registerValidator(rewardAddr, 500, "Moniker", { value: parseEther("10000") })
 ```
-/admin/
-```
-
-1. Подключи MetaMask  
-2. Выбери сети (включая SatanicChain L1)  
-3. Нажми **Деплой во все выбранные**  
-4. Скачай `deployments.json`
-
-## CLI-деплой
-
-```bash
-npm install
-npm run compile
-npm test
-PRIVATE_KEY=0x... npm run deploy:all
-```
-
-## Токены
-
-| Токен | Символ | Ориентир | Cap |
-|-------|--------|----------|-----|
-| Satanic Token | SATAN | 666 USD | 666 666 666 |
-| Satanic USD | SUSD | 1 USD | 666 666 666 666 |
-
-Vault: залог 150% → mint SUSD.
 
 ## Структура
 
 ```
 SatanicChain/
-├── l1/                 # настоящий блокчейн (geth Clique)
-├── contracts/          # Solidity
-├── admin/              # multi-deploy UI
-├── dapp/               # пользовательский интерфейс
-├── scripts/            # compile / deploy / test
+├── l1/                  # PoS L1 (geth + staking sync)
+│   ├── scripts/init.js
+│   ├── scripts/up.sh
+│   ├── scripts/pos-relayer.js
+│   └── docker-compose.yml
+├── contracts/           # Solidity (включая SatanicStaking, ValidatorSet)
+├── admin/               # multi-chain deploy UI
+├── dapp/                # swap / bridge / wallet
+├── scripts/             # compile, deploy, test
 ├── relayer/
-├── chain/              # Cloudflare Worker RPC
-└── vercel.json
+└── chain/               # Cloudflare Worker RPC
 ```
 
 ## Лицензия
