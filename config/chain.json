@@ -1,0 +1,31 @@
+{
+  "name": "SatanicChain",
+  "symbol": "SATAN",
+  "chainId": 666,
+  "chainIdHex": "0x29a",
+  "decimals": 18,
+  "blockTime": 2,
+  "gasLimit": 15000000,
+  "rateSatanToSusd": 666,
+  "explorer": "https://satanic.chain",
+  "rpc": {
+    "http": "http://127.0.0.1:8545",
+    "ws": "ws://127.0.0.1:8546",
+    "avalanche": "http://127.0.0.1:9650/ext/bc/SatanicChain/rpc"
+  },
+  "prefund": [
+    "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC",
+    "0x1F51415288f00e50161882A7702D8511208B3Dd8",
+    "0x95D2EF500031a0177960534204901F005eA05fE1"
+  ],
+  "publicRpcs": {
+    "ethereum": { "id": 1, "rpc": "https://ethereum-rpc.publicnode.com", "explorer": "https://etherscan.io", "currency": "ETH" },
+    "bsc": { "id": 56, "rpc": "https://bsc-rpc.publicnode.com", "explorer": "https://bscscan.com", "currency": "BNB" },
+    "base": { "id": 8453, "rpc": "https://base-rpc.publicnode.com", "explorer": "https://basescan.org", "currency": "ETH" },
+    "arbitrum": { "id": 42161, "rpc": "https://arbitrum-one-rpc.publicnode.com", "explorer": "https://arbiscan.io", "currency": "ETH" },
+    "optimism": { "id": 10, "rpc": "https://optimism-rpc.publicnode.com", "explorer": "https://optimistic.etherscan.io", "currency": "ETH" },
+    "polygon": { "id": 137, "rpc": "https://polygon-bor-rpc.publicnode.com", "explorer": "https://polygonscan.com", "currency": "POL" },
+    "avalanche": { "id": 43114, "rpc": "https://avalanche-c-chain-rpc.publicnode.com", "explorer": "https://snowtrace.io", "currency": "AVAX" },
+    "sepolia": { "id": 11155111, "rpc": "https://ethereum-sepolia-rpc.publicnode.com", "explorer": "https://sepolia.etherscan.io", "currency": "ETH", "testnet": true }
+  }
+}

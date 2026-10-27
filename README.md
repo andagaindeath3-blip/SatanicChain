@@ -1,51 +1,39 @@
 # SatanicChain
 
-**EVM L1 как BNB Chain — PoSA, 21 валидатор, блок 1 сек, native SATAN.**
+**EVM L1 · chainId 666 · gas token SATAN · multi-chain dApp**
 
-## Модель (BNB Chain style)
+One config drives everything: `config/chain.json` → `npm run unify`.
 
-| | |
-|--|--|
-| Consensus | **PoSA** (Proof of Staked Authority) |
-| Engine | geth Clique + `SystemStaking` election |
-| Validators | **max 21**, top by stake |
-| Block time | **1 second** |
-| Gas limit | 60 000 000 |
-| Gas token | **SATAN** |
-| Chain ID | **666** |
-
-Как BSC: быстрый EVM, ограниченный набор валидаторов, выбираемых стейком, permissionless вход через `createValidator`.
-
-## Запуск L1
+## Quick start
 
 ```bash
-cd l1
-npm i ethers
-node scripts/init.js
-./scripts/up.sh
-node scripts/status.js
+npm install
+npm run setup
+npm run l1
+npm run rpc:check
+# .env: PRIVATE_KEY=0x...
+npm run deploy:satanic
+npm run deploy:all
+npm run dapp:config
+npm start
+npm run relayer
 ```
 
-## Стать валидатором
+## MetaMask
 
-```js
-staking.createValidator(feeAddr, 500, "Moniker", { value: parseEther("10000") })
-```
+| Field | Value |
+|-------|--------|
+| RPC | `http://127.0.0.1:8545` |
+| Chain ID | **666** |
+| Symbol | **SATAN** |
 
-## Контракты
+## Commands
 
-| Contract | Role |
-|----------|------|
-| **SystemStaking** | PoSA staking / election (BSC-like) |
-| SatanicToken | ERC-20 SATAN |
-| SatanicUSD | SUSD |
-| SatanicVault | CDP |
-| SatanicSwap / Bridge | DeFi + bridge |
-
-## Admin multi-deploy
-
-`/admin/` — деплой во все сети одной кнопкой.
-
-## License
-
-MIT
+| Command | Action |
+|---------|--------|
+| `npm run unify` | Regenerate all from `config/chain.json` |
+| `npm run setup` | unify + compile |
+| `npm run l1` | Start geth L1 |
+| `npm run deploy:all` | Deploy on all chains |
+| `npm start` | Serve dApp |
+| `npm run relayer` | Bridge relayer |
