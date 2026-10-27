@@ -1,0 +1,21 @@
+{
+  "name": "SatanicChain",
+  "chain": "SATAN",
+  "icon": "satanic",
+  "rpc": ["https://satanic.chain/rpc"],
+  "faucets": [],
+  "nativeCurrency": {
+    "name": "SATAN",
+    "symbol": "SATAN",
+    "decimals": 18
+  },
+  "infoURL": "https://satanicchain.app",
+  "shortName": "satan",
+  "chainId": 666,
+  "networkId": 666,
+  "explorers": [{
+    "name": "satanic",
+    "url": "https://satanic.chain",
+    "standard": "EIP3091"
+  }]
+}

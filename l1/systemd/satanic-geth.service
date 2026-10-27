@@ -1,0 +1,14 @@
+[Unit]
+Description=SatanicChain geth (PoSA)
+After=network.target
+
+[Service]
+Type=simple
+User=satanic
+WorkingDirectory=/opt/satanicchain/l1
+ExecStart=/usr/bin/geth --datadir=/opt/satanicchain/l1/data --networkid=666 --http --http.addr=0.0.0.0 --http.port=8545 --http.api=eth,net,web3,txpool,clique --http.corsdomain=* --mine --unlock=${VALIDATOR} --password=/opt/satanicchain/l1/secrets/password.txt --allow-insecure-unlock
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+name = "satanic-chain-rpc"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# [vars]
+# UPSTREAM_RPC = "http://YOUR_NODE_IP:8575"
