@@ -7,12 +7,16 @@
 <title>SatanicChain — Create · Swap · Bridge</title>
 <link rel="icon" href="logo.png">
 <link rel="stylesheet" href="style.css">
-<style>html,body{margin:0;min-height:100%;background:#08070b!important;color:#f2eef6!important}</style>
+<style>
+html,body{margin:0;min-height:100%;background:#08070b!important;color:#f2eef6!important}
+#bootError{display:none;margin:16px;padding:14px;border-radius:10px;background:#2a1018;border:1px solid #ff5c7a;color:#ffb3c0;font:13px/1.4 system-ui}
+</style>
 </head>
 <body>
+<div id="bootError"></div>
 <div class="shell">
   <aside class="rail">
-    <img class="logo" src="logo.gif" alt="SatanicChain" onerror="this.style.display='none'">
+    <img class="logo" src="logo.gif" alt="SatanicChain" onerror="this.src='logo.png';this.onerror=null">
     <nav class="nav">
       <button type="button" data-tab="swap" class="on">SWAP</button>
       <button type="button" data-tab="create">CREATE</button>
@@ -25,22 +29,49 @@
     <div class="top">
       <div class="brand">
         <h1>SATANICCHAIN</h1>
-        <p>Create coins · swap · bridge · WalletConnect</p>
+        <p>Create · Swap · Bridge · multi-chain</p>
       </div>
       <div class="spacer"></div>
       <select id="netSelect" style="width:auto;min-width:170px"></select>
       <span class="pill" id="chainChip"><span class="dot"></span>network</span>
       <span class="pill primary" id="accountChip">Connect wallet</span>
     </div>
-    <div id="tab"></div>
+    <div id="tab"><div class="card"><p class="hint">Loading…</p></div></div>
     <div class="toast" id="toast"></div>
   </main>
 </div>
+<script>
+window.__dappShowError = function (msg) {
+  var el = document.getElementById('bootError');
+  if (!el) return;
+  el.style.display = 'block';
+  el.textContent = msg;
+  console.error(msg);
+};
+window.addEventListener('error', function (e) {
+  window.__dappShowError('Script error: ' + (e.message || e));
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.17.0/dist/index.umd.min.js"></script>
 <script src="config.js"></script>
 <script src="prices.js"></script>
 <script src="create-token.js"></script>
 <script src="app.js"></script>
+<script>
+(function () {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.17.0/dist/index.umd.js';
+  s.async = true;
+  s.onerror = function () { console.warn('WalletConnect CDN unavailable'); };
+  document.head.appendChild(s);
+})();
+setTimeout(function () {
+  var tab = document.getElementById('tab');
+  if (tab && /Loading/.test(tab.textContent) && !window.SatanicApp) {
+    window.__dappShowError('dApp failed to start — check Network tab for 404 on app.js/config.js');
+    tab.innerHTML = '<div class="card"><h3>dApp offline</h3><p class="hint">Local: npm run dapp → http://localhost:7300</p></div>';
+  }
+}, 2500);
+</script>
 </body>
 </html>
