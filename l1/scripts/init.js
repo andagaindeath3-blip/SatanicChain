@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * SatanicChain L1 — генерация multi-validator Clique genesis
- * Создаёт 3 валидатора по умолчанию (можно --validators=N)
+ * SatanicChain L1 — BNB Chain–style PoSA genesis
+ * PoSA, max 21 validators, 1s blocks, 60M gas, native SATAN
  */
 const fs = require('fs');
 const path = require('path');
@@ -10,15 +10,16 @@ const { Wallet, parseEther } = require('ethers');
 const root = path.join(__dirname, '..');
 const force = process.argv.includes('--force');
 const nVal = (() => {
-  const a = process.argv.find(x => x.startsWith('--validators='));
-  return a ? Math.max(1, Math.min(21, parseInt(a.split('=')[1], 10) || 3)) : 3;
+  const a = process.argv.find((x) => x.startsWith('--validators='));
+  return a ? Math.max(1, Math.min(21, parseInt(a.split('=')[1], 10) || 7)) : 7;
 })();
 
 const CHAIN_ID = 666;
 const TREASURY = '0x1F51415288f00e50161882A7702D8511208B3Dd8';
-const PERIOD = 3;
-const GAS_LIMIT = '0x1c9c380';
-
+const PERIOD = 1;
+const GAS_LIMIT = '0x3938700';
+const SYSTEM_STAKING = '0x0000000000000000000000000000000000001000';
+const SYSTEM_SLASH = '0x0000000000000000000000000000000000001001';
 const hex = (n) => '0x' + BigInt(n).toString(16);
 
 function main() {
@@ -35,7 +36,7 @@ function main() {
       wallet = Wallet.createRandom();
       fs.writeFileSync(keyFile, wallet.privateKey + '\n', { mode: 0o600 });
     }
-    validators.push({ index: i, address: wallet.address, keyFile: `secrets/validator-${i}.key` });
+    validators.push({ index: i, address: wallet.address });
   }
 
   const pwdFile = path.join(secretsDir, 'password.txt');
@@ -44,38 +45,32 @@ function main() {
     : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
   fs.writeFileSync(pwdFile, password + '\n', { mode: 0o600 });
 
-  const sorted = [...validators].sort((a, b) => a.address.toLowerCase().localeCompare(b.address.toLowerCase()));
+  const sorted = [...validators].sort((a, b) =>
+    a.address.toLowerCase().localeCompare(b.address.toLowerCase())
+  );
   const extraData =
-    '0x' +
-    '00'.repeat(32) +
-    sorted.map(v => v.address.slice(2).toLowerCase()).join('') +
+    '0x' + '00'.repeat(32) +
+    sorted.map((v) => v.address.slice(2).toLowerCase()).join('') +
     '00'.repeat(65);
 
   const alloc = {
-    [TREASURY]: { balance: hex(parseEther('300000000')) },
+    [TREASURY]: { balance: hex(parseEther('500000000')) },
+    [SYSTEM_STAKING]: { balance: '0x0' },
+    [SYSTEM_SLASH]: { balance: '0x0' },
   };
   for (const v of validators) {
-    alloc[v.address] = { balance: hex(parseEther('10000000')) };
+    alloc[v.address] = { balance: hex(parseEther('50000000')) };
   }
 
   const genesis = {
     config: {
       chainId: CHAIN_ID,
-      homesteadBlock: 0,
-      eip150Block: 0,
-      eip155Block: 0,
-      eip158Block: 0,
-      byzantiumBlock: 0,
-      constantinopleBlock: 0,
-      petersburgBlock: 0,
-      istanbulBlock: 0,
-      berlinBlock: 0,
-      londonBlock: 0,
-      mergeNetsplitBlock: null,
-      terminalTotalDifficulty: 0,
-      shanghaiTime: 0,
-      cancunTime: 0,
-      clique: { period: PERIOD, epoch: 30000 },
+      homesteadBlock: 0, eip150Block: 0, eip155Block: 0, eip158Block: 0,
+      byzantiumBlock: 0, constantinopleBlock: 0, petersburgBlock: 0,
+      istanbulBlock: 0, berlinBlock: 0, londonBlock: 0,
+      mergeNetsplitBlock: null, terminalTotalDifficulty: 0,
+      shanghaiTime: 0, cancunTime: 0,
+      clique: { period: PERIOD, epoch: 200 },
     },
     nonce: '0x0',
     timestamp: hex(Math.floor(Date.now() / 1000)),
@@ -94,39 +89,32 @@ function main() {
   fs.writeFileSync(path.join(root, 'genesis.json'), JSON.stringify(genesis, null, 2) + '\n');
   fs.writeFileSync(path.join(root, 'validators.json'), JSON.stringify({
     chainId: CHAIN_ID,
+    chainName: 'SatanicChain',
     nativeToken: 'SATAN',
-    decimals: 18,
-    consensus: 'clique (Proof-of-Authority)',
+    consensus: 'PoSA (Proof of Staked Authority) — BNB Chain model',
+    engine: 'clique + SystemStaking election',
     blockTimeSeconds: PERIOD,
-    gasLimit: 30_000_000,
-    validators: validators.map(v => ({ index: v.index, address: v.address })),
+    gasLimit: 60_000_000,
+    maxValidators: 21,
+    epochBlocks: 200,
+    bootstrapValidators: validators.map((v) => ({ index: v.index, address: v.address })),
+    systemContracts: { SystemStaking: SYSTEM_STAKING, SystemSlash: SYSTEM_SLASH },
     treasury: TREASURY,
     createdAt: new Date().toISOString(),
-    notes: 'Для добавления нового валидатора используйте clique.propose с любого существующего подписанта',
   }, null, 2) + '\n');
 
   fs.writeFileSync(path.join(root, '.env'), [
     `CHAIN_ID=${CHAIN_ID}`,
     `VALIDATOR=${validators[0].address}`,
-    `VALIDATOR_1=${validators[0].address}`,
-    validators[1] ? `VALIDATOR_2=${validators[1].address}` : '',
-    validators[2] ? `VALIDATOR_3=${validators[2].address}` : '',
+    ...validators.map((v, i) => `VALIDATOR_${i + 1}=${v.address}`),
+    `SYSTEM_STAKING=${SYSTEM_STAKING}`,
     '',
-  ].filter(Boolean).join('\n') + '\n');
+  ].join('\n'));
 
-  console.log('');
-  console.log('══════════════════════════════════════════');
-  console.log('  SatanicChain L1  ·  chainId', CHAIN_ID);
-  console.log('══════════════════════════════════════════');
-  console.log('Валидаторов:', nVal);
-  validators.forEach(v => console.log(`  [${v.index}] ${v.address}`));
-  console.log('Казна:     ', TREASURY);
-  console.log('Блок:      ', PERIOD, 'сек');
-  console.log('GasLimit:  ', 30_000_000);
-  console.log('');
-  console.log('Файлы: genesis.json, validators.json, secrets/, .env');
-  console.log('Дальше:  ./scripts/up.sh');
-  console.log('');
+  console.log('SatanicChain PoSA genesis ready');
+  console.log('chainId', CHAIN_ID, '| block', PERIOD + 's | gas 60M | validators', nVal);
+  validators.forEach((v) => console.log(' ', v.index, v.address));
+  console.log('Next: ./scripts/up.sh');
 }
 
 main();
