@@ -1,14 +1,16 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0a0c">
 <title>SatanicChain Admin — Multi-Chain Deploy</title>
-<link rel="icon" href="../dapp/logo.png">
+<link rel="icon" href="/dapp/logo.png">
 <style>
 :root{--bg:#0a0a0c;--card:#141418;--border:#2a2a32;--text:#e8e6e3;--muted:#8a8680;--accent:#c41e3a;--green:#2ecc71;--warn:#f39c12}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body{font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
 h1{font-size:1.6rem;margin-bottom:4px}
 .sub{color:var(--muted);margin-bottom:24px;font-size:.9rem}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -24,60 +26,61 @@ button.secondary{background:#2a2a32}
 .nets{max-height:280px;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .nets label{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text);cursor:pointer;padding:4px 0}
 .nets input{width:auto;margin:0}
-#log{font-family:ui-monospace,monospace;font-size:.8rem;background:#0a0a0c;border:1px solid var(--border);border-radius:8px;padding:12px;max-height:420px;overflow:auto;white-space:pre-wrap;line-height:1.45}
+#log{font-family:ui-monospace,monospace;font-size:.8rem;background:#0a0a0c;border:1px solid var(--border);border-radius:8px;padding:12px;max-height:420px;overflow:auto;white-space:pre-wrap;line-height:1.45;color:var(--text)}
 .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.75rem;background:#2a2a32;margin-right:6px}
 .pill.ok{background:#1a3a2a;color:var(--green)}
 .pill.err{background:#3a1a1a;color:#e74c3c}
 .pill.warn{background:#3a2a1a;color:var(--warn)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 a{color:var(--accent)}
+code{background:#1a1a22;padding:1px 6px;border-radius:4px}
 </style>
 </head>
 <body>
-  <h1>🔥 SatanicChain Admin</h1>
-  <p class="sub">EVM + L1 (chainId 666) · Деплой контрактов во все сети одной кнопкой через подключённый кошелёк</p>
+  <h1>SatanicChain Admin</h1>
+  <p class="sub">EVM + L1 (chainId 666) · Deploy contracts to all networks with one connected wallet</p>
   <div class="grid">
     <div class="card">
-      <h2>1. Кошелёк и параметры</h2>
+      <h2>1. Wallet &amp; parameters</h2>
       <div class="row">
-        <span class="pill" id="walletStatus">Не подключён</span>
-        <button id="btnConnect" style="width:auto">Подключить MetaMask</button>
+        <span class="pill" id="walletStatus">Not connected</span>
+        <button id="btnConnect" style="width:auto">Connect MetaMask</button>
       </div>
-      <label>Адрес получателя токенов (mint)</label>
+      <label>Token recipient (mint)</label>
       <input id="recipient" value="0x1F51415288f00e50161882A7702D8511208B3Dd8" placeholder="0x...">
-      <label>Relayer address (для Bridge, опционально = deployer)</label>
-      <input id="relayer" placeholder="оставьте пустым = deployer">
+      <label>Relayer address (Bridge; empty = deployer)</label>
+      <input id="relayer" placeholder="leave empty = deployer">
       <div class="row">
-        <button id="btnSelectAll" class="secondary" style="width:auto">Выбрать все</button>
-        <button id="btnSelectNone" class="secondary" style="width:auto">Снять все</button>
-        <button id="btnMainnet" class="secondary" style="width:auto">Только mainnet</button>
-        <button id="btnTestnet" class="secondary" style="width:auto">Только testnet</button>
+        <button id="btnSelectAll" class="secondary" style="width:auto">Select all</button>
+        <button id="btnSelectNone" class="secondary" style="width:auto">Clear all</button>
+        <button id="btnMainnet" class="secondary" style="width:auto">Mainnets only</button>
+        <button id="btnTestnet" class="secondary" style="width:auto">Testnets only</button>
       </div>
-      <label>Сети для деплоя</label>
+      <label>Networks to deploy</label>
       <div class="nets" id="netList"></div>
-      <button id="btnDeploy" disabled>🚀 Деплой во все выбранные сети</button>
-      <p style="font-size:.8rem;color:var(--muted);margin-top:8px">Кошелёк будет последовательно переключать сети и подписывать транзакции. Нужен газ в каждой выбранной сети.</p>
+      <button id="btnDeploy" disabled>Deploy to selected networks</button>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:8px">Wallet switches networks and signs txs. Gas required on each chain.</p>
     </div>
     <div class="card">
-      <h2>2. Лог и результаты</h2>
-      <div id="log">Ожидание действий...</div>
+      <h2>2. Log &amp; results</h2>
+      <div id="log">Waiting for actions…</div>
       <div style="margin-top:12px">
-        <button id="btnCopy" class="secondary" style="width:auto">Копировать лог / JSON</button>
-        <button id="btnDownload" class="secondary" style="width:auto">Скачать deployments.json</button>
+        <button id="btnCopy" class="secondary" style="width:auto">Copy log / JSON</button>
+        <button id="btnDownload" class="secondary" style="width:auto">Download deployments.json</button>
       </div>
     </div>
   </div>
   <div class="card" style="margin-top:20px">
-    <h2>L1 SatanicChain (chainId 666 · Clique PoA)</h2>
+    <h2>L1 SatanicChain (chainId 666 · Clique / PoSA)</h2>
     <p style="font-size:.9rem;color:var(--muted);line-height:1.5">
-      Собственный L1 на geth уже в репозитории (<code>l1/</code>). Запуск: <code>cd l1 && node scripts/init.js && ./scripts/up.sh</code>.
-      После поднятия ноды укажите RPC в <code>dapp/config.js</code> и в админке (сеть SatanicChain). 
-      Нативная монета — SATAN. Контракты деплоятся так же, как в любую EVM-сеть.
+      Custom L1 in <code>l1/</code>. Start: <code>cd l1 && node scripts/init.js && ./scripts/up.sh</code>.
+      Native gas token is SATAN.
     </p>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
-<script src="artifacts.js"></script>
+  <p style="margin-top:20px;font-size:.85rem;color:var(--muted)"><a href="/">← Back to dApp</a></p>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script src="networks.js"></script>
+<script src="artifacts.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>
