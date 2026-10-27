@@ -1,13 +1,19 @@
 {
   "name": "satanicchain",
   "version": "1.0.0",
-  "description": "SatanicChain: EVM + L1 (666), SATAN/SUSD multi-chain, dApp, Admin multi-deploy",
+  "description": "SatanicChain: PoSA L1 (BNB Chain style) + multi-chain SATAN/SUSD + dApp + Admin",
   "scripts": {
     "compile": "node scripts/compile.js",
     "test": "node scripts/local-run.js",
     "deploy": "node scripts/deploy.js",
     "deploy:all": "node scripts/deploy.js all",
     "tokenlist": "node scripts/generate-tokenlist.js",
+    "test:swap-bridge": "node scripts/test-swap-bridge.js",
+    "test:deploy": "node scripts/test-deploy.js",
+    "test:relayer": "node scripts/test-relayer.js",
+    "test:dapp": "node scripts/test-dapp.js",
+    "test:all": "node scripts/test-swap-bridge.js && node scripts/test-deploy.js && node scripts/test-relayer.js && node scripts/test-dapp.js",
+    "dapp:config": "node scripts/make-dapp-config.js",
     "dapp": "node scripts/serve-dapp.js",
     "relayer": "node relayer/index.js"
   },
