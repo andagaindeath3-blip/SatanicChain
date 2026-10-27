@@ -1,0 +1,17 @@
+{
+  "name": "SatanicChain",
+  "vm": "Subnet-EVM",
+  "vmVersion": "v0.6.12",
+  "subnet": "SatanicChain",
+  "tokenName": "SATAN",
+  "tokenSymbol": "SATAN",
+  "chainID": 666,
+  "version": "1.0.0",
+  "networks": {
+    "Local Network": {},
+    "Fuji": {},
+    "Mainnet": {}
+  },
+  "teleporterReady": true,
+  "runRelayer": true
+}
