@@ -1,0 +1,27 @@
+{
+  "name": "SatanicChain",
+  "symbol": "SATAN",
+  "chainId": 666,
+  "decimals": 18,
+  "blockTime": 2,
+  "gasLimit": 15000000,
+  "modes": {
+    "geth": {
+      "rpc": "http://127.0.0.1:8545",
+      "ws": "ws://127.0.0.1:8546",
+      "notes": "Docker Clique/PoSA under l1/"
+    },
+    "avalanche": {
+      "rpc": "http://127.0.0.1:9650/ext/bc/SatanicChain/rpc",
+      "notes": "Avalanche Subnet-EVM under avalanche-l1/"
+    }
+  },
+  "explorer": "https://satanic.chain",
+  "bridgeMinAmount": "1",
+  "rateSatanToSusd": 666,
+  "prefund": [
+    "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC",
+    "0x1F51415288f00e50161882A7702D8511208B3Dd8",
+    "0x95D2EF500031a0177960534204901F005eA05fE1"
+  ]
+}
