@@ -14,6 +14,7 @@ const only = (() => {
 
 const ROOT = path.join(__dirname, '..');
 const ART = path.join(ROOT, 'deployments');
+const DEFAULT_CREATE_FEE = '0.00013666';
 
 function loadArtifact(name) {
   const p = path.join(ROOT, 'build', name + '.json');
@@ -28,7 +29,8 @@ async function deployOn(net) {
   const wallet = new ethers.Wallet(pk, provider);
   console.log('\n->', net.name, 'chainId', net.chainId, 'from', wallet.address);
   const feeRecipient = process.env.FEE_RECIPIENT || wallet.address;
-  const createFee = ethers.parseEther(process.env.CREATE_FEE || '0');
+  const createFee = ethers.parseEther(process.env.CREATE_FEE || DEFAULT_CREATE_FEE);
+  console.log('  createFee', ethers.formatEther(createFee), net.currency || 'native');
   let factoryAddr, dexAddr;
   try {
     const bootArt = loadArtifact('MultiChainFactoryBootstrap');
@@ -50,7 +52,16 @@ async function deployOn(net) {
   }
   console.log('  TokenFactory', factoryAddr);
   console.log('  TokenDEX    ', dexAddr);
-  const out = { chainId: net.chainId, network: net.key, factory: factoryAddr, dex: dexAddr, feeRecipient, at: new Date().toISOString() };
+  const out = {
+    chainId: net.chainId,
+    network: net.key,
+    factory: factoryAddr,
+    dex: dexAddr,
+    feeRecipient,
+    createFee: createFee.toString(),
+    createFeeHuman: DEFAULT_CREATE_FEE,
+    at: new Date().toISOString(),
+  };
   fs.mkdirSync(ART, { recursive: true });
   fs.writeFileSync(path.join(ART, 'factory-' + net.chainId + '.json'), JSON.stringify(out, null, 2));
   return out;
