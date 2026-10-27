@@ -1,20 +1,24 @@
-# SatanicChain L1 — Public Permissionless PoS (chainId 666)
+# SatanicChain — L1 как BNB Chain (PoSA)
 
-**Модель:** Stake-weighted Proof-of-Stake (permissionless)  
-**Консенсус-движок:** Clique + on-chain election  
-**Блок:** 3 секунды  
-**Gas limit:** 30 000 000  
-**Нативная монета:** SATAN  
-**Макс. активных валидаторов:** 21  
+**Consensus:** Proof of Staked Authority (PoSA) — как BNB Smart Chain  
+**Engine:** geth Clique + SystemStaking (top-21)  
+**Chain ID:** 666  
+**Block time:** **1 second**  
+**Gas limit:** 60 000 000  
+**Gas token:** **SATAN**  
+**Max validators:** **21**
 
-## Как это permissionless PoS
+## vs BNB Chain
 
-1. Любой может вызвать `registerValidator()` / `stake()`, отправив native SATAN (≥ 10 000).
-2. `SatanicStaking` каждые ~100 блоков пересчитывает active set = топ-21 по стейку.
-3. `ValidatorSet` + `pos-relayer` синхронизируют набор с geth через `clique.propose`.
-4. Слэшинг 5%, jail 2 дня, unbonding 7 дней.
+| | BSC | SatanicChain |
+|--|-----|--------------|
+| Consensus | Parlia (PoSA) | Clique + SystemStaking (PoSA) |
+| Max validators | 21 | 21 |
+| Block time | ~0.75s | 1s |
+| Gas token | BNB | SATAN |
+| Election | stake-weighted | stake-weighted top-21 |
 
-## Быстрый старт
+## Start
 
 ```bash
 cd l1
@@ -24,29 +28,22 @@ node scripts/init.js
 node scripts/status.js
 ```
 
-RPC: `http://127.0.0.1:8545` · Chain ID **666** · Symbol **SATAN**
+RPC `http://127.0.0.1:8545` · Chain ID **666** · Symbol **SATAN**
 
-## Стать валидатором
+## Become validator
 
 ```js
-await staking.registerValidator(rewardAddr, 500, "Moniker", { value: parseEther("10000") });
+await staking.createValidator(feeAddr, 500, "Name", { value: parseEther("10000") });
+await staking.delegate(operator, { value: parseEther("1000") });
 ```
 
-## Relayer
+## System contracts
 
-```bash
-STAKING_ADDRESS=0x... VALIDATOR_SET=0x... PRIVATE_KEY=0x... \
-  node scripts/pos-relayer.js
-```
+| Address | Contract |
+|---------|----------|
+| `0x0000…1000` | SystemStaking |
+| `0x0000…1001` | SystemSlash (reserved) |
 
-## Параметры
+## Params
 
-| Параметр | Значение |
-|----------|----------|
-| Min stake | 10 000 SATAN |
-| Max validators | 21 |
-| Unbonding | 7 days |
-| Slash | 5% |
-| Jail | 2 days |
-
-Текущая модель уже **публичная и permissionless**.
+Min self-stake 10_000 SATAN · Unbonding 7d · Slash 5% · Jail 2d · Epoch 200 blocks
