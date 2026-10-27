@@ -1,0 +1,179 @@
+# SatanicChain L1 — multi-validator Clique PoA (geth)
+# Запуск: node scripts/init.js && ./scripts/up.sh
+#
+# node1/2/3 — sealers, rpc — read-only gateway
+
+x-geth-common: &geth-common
+  image: ethereum/client-go:v1.14.12
+  restart: unless-stopped
+  volumes:
+    - ./genesis.json:/genesis.json:ro
+    - ./secrets:/secrets:ro
+
+services:
+  init:
+    <<: *geth-common
+    container_name: satanic-init
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        for d in /data1 /data2 /data3 /datarpc; do
+          if [ ! -d "$$d/geth" ]; then
+            echo "init $$d"
+            geth init --datadir=$$d /genesis.json
+          fi
+        done
+        echo "init done"
+    volumes:
+      - ./data/node1:/data1
+      - ./data/node2:/data2
+      - ./data/node3:/data3
+      - ./data/rpc:/datarpc
+      - ./genesis.json:/genesis.json:ro
+    restart: "no"
+
+  node1:
+    <<: *geth-common
+    container_name: satanic-node1
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    command:
+      - --datadir=/data
+      - --networkid=666
+      - --syncmode=full
+      - --gcmode=archive
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=eth,net,web3,txpool,clique,admin,debug
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.api=eth,net,web3
+      - --port=30303
+      - --maxpeers=50
+      - --mine
+      - --miner.etherbase=${VALIDATOR_1}
+      - --unlock=${VALIDATOR_1}
+      - --password=/secrets/password.txt
+      - --allow-insecure-unlock
+      - --verbosity=3
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "30303:30303/tcp"
+      - "30303:30303/udp"
+    volumes:
+      - ./data/node1:/data
+      - ./genesis.json:/genesis.json:ro
+      - ./secrets:/secrets:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --post-data='{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_chainId\",\"params\":[]}' --header='Content-Type: application/json' http://127.0.0.1:8545 2>/dev/null | grep -q 0x29a || exit 1"]
+      interval: 15s
+      timeout: 8s
+      retries: 10
+      start_period: 20s
+
+  node2:
+    <<: *geth-common
+    container_name: satanic-node2
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      node1:
+        condition: service_started
+    command:
+      - --datadir=/data
+      - --networkid=666
+      - --syncmode=full
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=eth,net,web3,txpool,clique
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --port=30304
+      - --maxpeers=50
+      - --mine
+      - --miner.etherbase=${VALIDATOR_2}
+      - --unlock=${VALIDATOR_2}
+      - --password=/secrets/password.txt
+      - --allow-insecure-unlock
+      - --verbosity=3
+    ports:
+      - "8555:8545"
+      - "30304:30304/tcp"
+      - "30304:30304/udp"
+    volumes:
+      - ./data/node2:/data
+      - ./genesis.json:/genesis.json:ro
+      - ./secrets:/secrets:ro
+
+  node3:
+    <<: *geth-common
+    container_name: satanic-node3
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      node1:
+        condition: service_started
+    command:
+      - --datadir=/data
+      - --networkid=666
+      - --syncmode=full
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=eth,net,web3,txpool,clique
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --port=30305
+      - --maxpeers=50
+      - --mine
+      - --miner.etherbase=${VALIDATOR_3}
+      - --unlock=${VALIDATOR_3}
+      - --password=/secrets/password.txt
+      - --allow-insecure-unlock
+      - --verbosity=3
+    ports:
+      - "8565:8545"
+      - "30305:30305/tcp"
+      - "30305:30305/udp"
+    volumes:
+      - ./data/node3:/data
+      - ./genesis.json:/genesis.json:ro
+      - ./secrets:/secrets:ro
+
+  rpc:
+    <<: *geth-common
+    container_name: satanic-rpc
+    depends_on:
+      node1:
+        condition: service_healthy
+    command:
+      - --datadir=/data
+      - --networkid=666
+      - --syncmode=full
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=eth,net,web3,txpool
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.api=eth,net,web3
+      - --port=30310
+      - --maxpeers=50
+      - --verbosity=2
+    ports:
+      - "8575:8545"
+      - "8576:8546"
+    volumes:
+      - ./data/rpc:/data
+      - ./genesis.json:/genesis.json:ro
