@@ -1,25 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/(.*)", "destination": "/admin/$1" },
-    { "source": "/style.css", "destination": "/dapp/style.css" },
-    { "source": "/app.js", "destination": "/dapp/app.js" },
-    { "source": "/config.js", "destination": "/dapp/config.js" },
-    { "source": "/prices.js", "destination": "/dapp/prices.js" },
-    { "source": "/create-token.js", "destination": "/dapp/create-token.js" },
-    { "source": "/chain.json", "destination": "/dapp/chain.json" },
-    { "source": "/i18n.js", "destination": "/dapp/i18n.js" },
-    { "source": "/logo.png", "destination": "/dapp/logo.png" },
-    { "source": "/logo.gif", "destination": "/dapp/logo.gif" },
-    { "source": "/", "destination": "/dapp/index.html" },
-    { "source": "/index.html", "destination": "/dapp/index.html" }
-  ],
   "headers": [
     {
-      "source": "/(.*).js",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      "source": "/dapp/(.*).js",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
     }
   ]
 }
