@@ -1,0 +1,21 @@
+{
+  "name": "SatanicChain AI",
+  "version": "1.0.0",
+  "architecture": {
+    "label": "8x8x5",
+    "description": "8 domains × 8 metrics × 5 actions",
+    "domains": ["rpc", "blocks", "validators", "tokens", "swap", "bridge", "relayer", "security"],
+    "metricsPerDomain": 8,
+    "actions": ["observe", "score", "alert", "suggest", "automate"]
+  },
+  "chainId": 666,
+  "symbol": "SATAN",
+  "pollIntervalMs": 15000,
+  "alertThresholds": {
+    "blockLagSec": 30,
+    "rpcLatencyMs": 3000,
+    "bridgePendingMax": 20,
+    "poolImbalanceRatio": 5,
+    "minPeerCount": 1
+  }
+}
