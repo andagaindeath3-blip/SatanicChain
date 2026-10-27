@@ -4,12 +4,6 @@
   "rewrites": [
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/admin/", "destination": "/admin/index.html" },
-    { "source": "/", "destination": "/dapp/index.html" },
-    { "source": "/style.css", "destination": "/dapp/style.css" },
-    { "source": "/app.js", "destination": "/dapp/app.js" },
-    { "source": "/config.js", "destination": "/dapp/config.js" },
-    { "source": "/prices.js", "destination": "/dapp/prices.js" },
-    { "source": "/logo.png", "destination": "/dapp/logo.png" },
-    { "source": "/logo.gif", "destination": "/dapp/logo.gif" }
+    { "source": "/", "destination": "/dapp/index.html" }
   ]
 }
